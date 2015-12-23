@@ -13,9 +13,6 @@
 @property(nonatomic, weak)IBOutlet SCNView *scnView;
 @property(nonatomic, strong)SCNNode *cameraPivotNode;
 @property(nonatomic, strong)NSArray <SCNNode *> *selectedNodes;
-@property(nonatomic, assign)CGPoint dragDelta;
-@property(nonatomic, assign)CGPoint dragInitialLocation;
-@property(nonatomic, assign)CGPoint previousLocation;
 @property(nonatomic, assign)SCNVector3 previousUnprojectedPoint;
 @property(nonatomic, assign)SCNVector3 hitResultWorldCoordinate;
 @property(nonatomic, assign)SCNVector3 hitResultDocumentNodeCoordinate;
@@ -121,8 +118,6 @@
     CGPoint location = [panRecognizer locationInView:self.view];
     switch (panRecognizer.state) {
         case UIGestureRecognizerStateBegan:
-            self.dragInitialLocation = location;
-            self.previousLocation = self.dragInitialLocation;
             self.hitResultDocumentNodeCoordinateProjectedPoint = [self.scnView projectPoint:self.hitResultWorldCoordinate];
             
             SCNVector3 unprojectedPoint = [self.scnView unprojectPoint:SCNVector3Make(location.x, location.y, self.hitResultDocumentNodeCoordinateProjectedPoint.z)];
@@ -140,7 +135,6 @@
             SCNNode *selected = self.selectedNodes.firstObject;
             selected.position = SCNVector3Make(selected.position.x + delta.x, selected.position.y + delta.y, selected.position.z + delta.z);
             self.previousUnprojectedPoint = unprojectedPoint;
-            self.previousLocation = location;
             break;
         }
         case UIGestureRecognizerStateEnded:
